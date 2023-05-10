@@ -30,6 +30,7 @@ window.addEventListener('keydown', function (e) {
 
     if(e.key === "w" || e.key === "W" || e.code === "Space"){
         up_key = true;
+        
     }
     else if (e.key === "a" || e.key === "A"){
         left_key = 1;
@@ -37,7 +38,7 @@ window.addEventListener('keydown', function (e) {
     else if (e.key === "d" || e.key === "D"){
         right_key = 1;
     }
-
+    
 });
 window.addEventListener('keyup', function (e) {
 
