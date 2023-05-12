@@ -6,6 +6,8 @@ const ctx = canvas.getContext("2d");
 let gameWidth;
 let gameHeight;
 
+let playerNum=0;
+
 
 socket.on("welcome", (id, gWidth, gHeight) => {
     console.log(id);
@@ -20,7 +22,10 @@ socket.on("update", (player1, player2) => {
     ctx.fillRect(player2.position[0], player2.position[1], player2.hitbox[0], player2.hitbox[1]);
 })
 
-
+socket.on("assignPlayerNum", (num)=>{
+    playerNum=num;
+    console.log(playerNum);
+})
 
 let left_key = 0;
 let right_key = 0;
@@ -38,7 +43,10 @@ window.addEventListener('keydown', function (e) {
     else if (e.key === "d" || e.key === "D"){
         right_key = 1;
     }
-    
+
+    socket.emit("updateMove", playerNum, up_key, left_key, right_key);
+
+
 });
 window.addEventListener('keyup', function (e) {
 
@@ -51,5 +59,7 @@ window.addEventListener('keyup', function (e) {
     else if (e.key === "d" || e.key === "D"){
         right_key = 0;
     }
+    socket.emit("updateMove", playerNum, up_key, left_key, right_key);
 
 });
+
