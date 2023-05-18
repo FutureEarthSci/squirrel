@@ -1,18 +1,102 @@
 const socket = io();
 
+
+
+const userJoin = document.getElementById("userJoin");
+const nameInput = document.getElementById("nameInput");
+const joinError = document.getElementById("joinError");
+const roundInfo = document.getElementById("roundInfo");
+const roundNumber = document.getElementById("roundNumber");
+const roundPlayers = document.getElementById("roundPlayers");
+const readyButton = document.getElementById("readyButton");
+const peopleNames = document.getElementById("peopleNames");
+const userList = document.getElementById("userList");
+const startGameButton = document.getElementById("startGameButton");
+const needTwoPlayers = document.getElementById("needTwoPlayers");
+
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let gameWidth;
-let gameHeight;
+let gameHeight = 768;
+let gameWidth = 1024;
 
-let playerNum=0;
+//initial visibility
+userJoin.style.visibility = "visible";
+roundInfo.style.visibility = "hidden";
+readyButton.style.visibility = "hidden";
+peopleNames.style.visibility = "hidden";
+userList.style.visibility = "hidden";
+startGameButton.style.visibility = "hidden";
+needTwoPlayers.style.visibility = "hidden";
+canvas.style.visibility = "hidden";
 
 
-socket.on("welcome", (id, gWidth, gHeight) => {
-    console.log(id);
-    gameWidth = gWidth;
-    gameHeight = gHeight;
+let playerNum = 0;
+let id = "";
+
+function submitName(){
+    if (nameInput.value){
+        socket.emit("joinAttempt", nameInput.value);
+    }
+}
+
+socket.on("joinError", (errorType) => {
+    joinError.innerHTML = errorType;
+})
+
+socket.on("joinSuccess", (socketId, gW, gH) =>{
+    canvas.style.width = gW;
+    canvas.style.height = gH;
+    id = socketId;
+    userJoin.style.visibility = "hidden";
+    roundInfo.style.visibility = "visible";
+    peopleNames.style.visibility = "visible";
+    userList.style.visibility = "visible";
+    startGameButton.style.visibility = "visible";
+    needTwoPlayers.style.visibility = "visible";
+    canvas.style.visibility = "visible";
+})
+
+socket.on("updateUserList", (players) => {
+    while(userList.firstChild){
+        userList.firstChild.remove();
+    }
+    for (const [key, value] of Object.entries(players)){
+        var newUser = document.createElement("p");
+        var text = document.createTextNode(value);
+        newUser.appendChild(text);
+        userList.appendChild(newUser);
+    }
+})
+
+function startGame(){
+    socket.emit("startGameAttempt");
+}
+
+socket.on("startGameError", () => {
+    needTwoPlayers.innerHTML = "need at least two players! (or game already started but you shouldn't be seeing this if that's the case)";
+})
+
+socket.on("startGame", () => {
+    startGameButton.style.visibility = "hidden";
+    needTwoPlayers.style.visibility = "hidden";
+})
+
+socket.on("readyCheck", (assignedPlayerNum) => {
+    readyButton.style.visibility = "visible";
+    playerNum = assignedPlayerNum;
+})
+
+
+function confirmReady(){
+    socket.emit("imReady");
+    readyButton.style.visibility = "hidden";
+}
+
+socket.on("updateRoundInfo", (roundNum, p1, p2) => {
+    roundNumber.innerHTML = "round: " + String(roundNum);
+    roundPlayers.innerHTML = p1 + " vs " + p2;
 })
 
 socket.on("update", (player1, player2) => {
@@ -22,10 +106,11 @@ socket.on("update", (player1, player2) => {
     ctx.fillRect(player2.position[0], player2.position[1], player2.hitbox[0], player2.hitbox[1]);
 })
 
-socket.on("assignPlayerNum", (num)=>{
-    playerNum=num;
-    console.log(playerNum);
+socket.on("resetPlayerNum", () => {
+    playerNum = 0;
 })
+
+
 
 let left_key = 0;
 let right_key = 0;

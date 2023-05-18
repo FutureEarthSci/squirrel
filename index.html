@@ -5,13 +5,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="http://192.168.1.29:3000/styles.css">
+    <link rel="stylesheet" href="http://192.168.1.25:3000/styles.css">
 </head>
 <body>
-    <p>yo wassup</p>
-    <canvas id="canvas" width="1024" height="768"></canvas>
+    <div id="userJoin">
+        <label for="nameInput">Name</label>
+        <input id="nameInput" name="nameInput" autocomplete="off"/><button onclick="submitName();">Join</button>
+        <p id="joinError"></p>
+    </div>
+
+    <div id="roundInfo">
+        <p id="roundNumber"></p>
+        <p id="roundPlayers"></p>
+    </div>
+    <button id="readyButton" onclick="confirmReady();">Ready</button>
+    <p id="peopleNames">players joined:</p>
+    <div id="userList"></div>
+
+    <button id="startGameButton" onclick="startGame();">start game</button>
+    <p id="needTwoPlayers"></p>
+
+    <canvas id="canvas" width="1024" height="512"></canvas>
+
     <script src="/socket.io/socket.io.js"></script>
-    <script src="http://192.168.1.29:3000/script.js"></script> <!-- joon-25 -->
+    <script src="http://192.168.1.25:3000/script.js"></script> <!-- joon-25 -->
 
 </body>
 </html>
